@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>一葉茶屋｜從一片葉，到一碗茶</title>
+    <link rel="stylesheet" href="style.css?v=20261020-5" />
+  </head>
+  <body>
+    <div class="game-frame">
+      <header class="game-header">
+        <a class="brand" href="index.html"
+          ><span class="seal">葉</span
+          ><span>一葉茶屋<small>從一片葉，到一碗茶</small></span></a
+        >
+        <div class="shop-status" aria-label="營業狀態">
+          <span>☀ <b id="day">第 1 日</b></span>
+          <span>◉ <b id="coins">0</b> 茶錢</span>
+          <span>♡ <b id="served">0</b> 位</span>
+        </div>
+        <nav aria-label="主要導覽">
+          <select id="language" aria-label="Language">
+            <option value="ja">日本語</option>
+            <option value="zh-Hant">繁體中文</option>
+          </select>
+          <button id="business-toggle" class="quiet" hidden>暫停</button>
+          <span id="business-clock">備茶中</span>
+          <button class="nav active" data-view="lab">茶屋</button>
+          <button class="nav" data-view="atlas">
+            圖鑑 <span id="nav-count">0 / 9</span>
+          </button>
+          <button id="help" class="quiet" aria-label="遊玩說明">？</button>
+        </nav>
+      </header>
+
+      <main>
+        <section id="lab" aria-label="茶屋工作畫面">
+          <!-- The shop, shelf and workbench stay together in the game viewport. -->
+          <section class="shop-scene" aria-label="茶屋與客人">
+            <div class="shop-curtain" aria-hidden="true"><i></i><i></i></div>
+            <div id="business-panel" class="business-panel">
+              <strong id="business-title">開店前的備茶時間</strong>
+              <p id="business-note">備茶不限時，原料與加工會花費茶錢。</p>
+              <button id="open-shop" class="primary">準備好了，開店</button>
+              <button id="next-day" class="primary" hidden>開始下一天</button>
+              <button id="support" class="quiet" hidden>領取備茶補助</button>
+            </div>
+            <img
+              id="customer-art"
+              class="customer-art"
+              src="assets/simple/customer-haru.png"
+              alt="來訪客人"
+            />
+            <p id="arrival-status" class="arrival-status" role="status">
+              門口傳來腳步聲……
+            </p>
+            <div class="customer-dialog">
+              <div class="customer-heading">
+                <h1 id="customer-name">來訪的客人</h1>
+                <span id="customer-role"></span>
+              </div>
+              <p id="customer-request"></p>
+              <div class="customer-bottom">
+                <div id="request-tags"></div>
+                <span id="reward"></span>
+                <button id="customer-hint" class="quiet">聊聊口味 ↗</button>
+              </div>
+            </div>
+            <button id="skip-customer" class="next-guest">下一位 →</button>
+          </section>
+
+          <!-- A single horizontal shelf, with local scrolling when stock grows. -->
+          <section class="inventory-panel" aria-label="櫃檯上的茶">
+            <div class="shelf-label">
+              <h2>櫃檯上的茶</h2>
+              <small>選擇要交給客人的茶</small>
+            </div>
+            <button
+              id="stock-prev"
+              class="shelf-arrow"
+              aria-label="查看前面的茶"
+            >
+              ‹
+            </button>
+            <div
+              id="inventory"
+              tabindex="0"
+              aria-label="茶葉庫存，可橫向捲動"
+            ></div>
+            <button
+              id="stock-next"
+              class="shelf-arrow"
+              aria-label="查看後面的茶"
+            >
+              ›
+            </button>
+            <button id="serve" class="primary" disabled>先選一份茶</button>
+          </section>
+
+          <section class="worktable" aria-label="製茶工作台">
+            <div class="bench-heading">
+              <span class="eyebrow">製茶工作台 <span id="batch"></span></span>
+              <span id="batch-cost"></span><span id="phase">① 選一份原料</span>
+            </div>
+            <div class="tool-field">
+              <div id="actions" aria-label="加工道具"></div>
+              <div class="center-station">
+                <button id="tea-tray" class="tray-scene" aria-label="選擇原料">
+                  <span
+                    id="tea-art"
+                    class="tea-sprite"
+                    role="img"
+                    aria-label="空茶盤"
+                  ></span>
+                  <span id="steam" aria-hidden="true">﹏　﹏　﹏</span>
+                  <span id="tray-instruction">＋ 點茶盤選原料</span>
+                </button>
+                <div class="scene-label">
+                  <strong id="stage-label"></strong
+                  ><small id="material-label"></small>
+                </div>
+                <div class="batch-controls">
+                  <button id="identify" class="primary" disabled>
+                    完成後鑑定入庫
+                  </button>
+                  <button id="restart" class="quiet">換葉</button>
+                  <button id="cancel-processing" class="quiet" hidden>
+                    收回茶葉
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="workbench-notes">
+              <div class="observations" aria-live="polite">
+                <div><small>葉色</small><strong id="color">—</strong></div>
+                <div><small>香氣</small><strong id="aroma">—</strong></div>
+                <div><small>手感</small><strong id="texture">—</strong></div>
+                <div><small>水分</small><strong id="water">—</strong></div>
+              </div>
+              <div class="insight" aria-live="polite">
+                <span>✎ 觀察手記</span>
+                <p id="hint"></p>
+              </div>
+            </div>
+            <div class="progress-line">
+              <span id="quest"></span><span id="steps"></span>
+            </div>
+          </section>
+          <p id="sale-feedback" class="toast" role="status" hidden></p>
+        </section>
+
+        <section id="atlas" hidden aria-label="製茶研究圖鑑">
+          <div class="atlas-heading">
+            <div>
+              <p class="eyebrow">THE TEA FIELD NOTES</p>
+              <h2>一片葉子的可能性</h2>
+              <p>虛線是原料來源，實線是加工轉化。點開已發現的茶重讀筆記。</p>
+            </div>
+            <strong
+              ><b id="count">0</b> / <span id="total-count">9</span></strong
+            >
+          </div>
+          <div id="graph"></div>
+          <p class="science">
+            這是日本綠茶與台灣茶的簡化探索圖。番茶不是煎茶的下一階段；玉露需要遮陰栽培。台灣茶的攪拌次數代表遊戲階段，團揉整形合併初乾與反覆包揉，並非實際生產配方。產地與品種不能僅由加工推定。
+          </p>
+          <p class="science source-links">
+            參考資料：
+            <a
+              href="https://www.lupicia.co.jp/tea/archives/12093"
+              target="_blank"
+              rel="noopener"
+              >LUPICIA · 台灣烏龍製程</a
+            >
+            ·
+            <a
+              href="https://www.maff.go.jp/j/keikaku/syokubunka/traditional-foods/menu/uzitya.html"
+              target="_blank"
+              rel="noopener"
+              >農林水產省 · 日本茶</a
+            >
+            ·
+            <a
+              href="https://www.tbrs.gov.tw/ws.php?id=4748"
+              target="_blank"
+              rel="noopener"
+              >茶改場 · 台灣茶製程</a
+            >
+          </p>
+        </section>
+      </main>
+      <footer>
+        <span>一葉茶屋 · 從一片葉，到一碗茶</span
+        ><span id="save-state">圖鑑、庫存與營業進度自動儲存</span>
+      </footer>
+    </div>
+
+    <dialog id="material-picker" aria-labelledby="material-title">
+      <button
+        id="close-material"
+        class="dialog-close"
+        aria-label="關閉原料選單"
+      >
+        ×
+      </button>
+      <p class="eyebrow">從一片葉開始</p>
+      <h2 id="material-title">選擇要使用的原料</h2>
+      <p class="muted">選好後，將中央的茶葉拖向道具；也可以直接點道具。</p>
+      <div id="materials"></div>
+      <p id="material-warning" class="muted">
+        換原料會開始新的一批，已入庫的茶與圖鑑都會保留。
+      </p>
+    </dialog>
+    <dialog id="modal">
+      <button id="close-modal" class="dialog-close" aria-label="關閉">×</button>
+      <div id="modal-content"></div>
+    </dialog>
+    <script src="workshop.js?v=20261020-5"></script>
+    <script src="app.js?v=20261020-6"></script>
+    <script src="i18n.js?v=20261020-6"></script>
+  </body>
+</html>
